@@ -1,0 +1,17 @@
+{
+  "name": "angular",
+  "description": "",
+  "main": "index.html",
+  "authors": [
+    "fcojunr"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/FcoJunior/wkf-angular",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
