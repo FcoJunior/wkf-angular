@@ -9,7 +9,7 @@ module.exports = function(grunt) {
     copy: {
       public: {
         expand: true,
-        cwd: 'public',
+        cwd: 'app',
         src: '**',
         dest: 'dist'
       }
@@ -23,7 +23,7 @@ module.exports = function(grunt) {
         src: ['dist/scripts/**/*.js', '!dist/scripts/*.min.js']
       },
       css: {
-        src: ['dist/style/**/*.css', '!dist/style/*.min.css']
+        src: ['dist/style/**/*.css', 'dist/style/**/*.scss', '!dist/style/*.min.css']
       }
     },
 
@@ -62,7 +62,42 @@ module.exports = function(grunt) {
 
     jshint: {
       js: {
-        src: ['public/scripts/**/*.js']
+        src: ['app/scripts/**/*.js']
+      }
+    },
+
+    browserSync: {
+      public: {
+        bsFiles: {
+          watchTask: true,
+          src: ['app/**/*']
+        },
+
+        options: {
+          server: {
+            baseDir: 'app'
+          }
+        }
+      }
+    },
+
+    bowerInstall: {
+      public: {
+        src: ['app/index.html']
+      }
+    },
+
+    // Sass
+    sass : {
+      dist : {
+        options : { style : 'compressed' },
+        files: [{
+          expand: true,
+          cwd: 'app/style',
+          src: ['*.scss'],
+          dest: '.tmp',
+          ext: '.css'
+        }]
       }
     },
 
@@ -71,23 +106,13 @@ module.exports = function(grunt) {
         options: {
           event: ['changed']
         },
-        files: 'public/scripts/**/*.js',
+        files: 'app/scripts/**/*.js',
         tasks: 'jshint:js'
-      }
-    },
+      },
 
-    browserSync: {
-      public: {
-        bsFiles: {
-          watchTask: true,
-          src: ['public/**/*']
-        },
-
-        options: {
-          server: {
-            baseDir: 'public'
-          }
-        }
+      css: {
+        files: 'app/style/*.scss',
+        tasks: ['sass']
       }
     }
   });
@@ -103,10 +128,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-usemin');
   grunt.loadNpmTasks('grunt-rev');
   grunt.loadNpmTasks('grunt-browser-sync');
+  grunt.loadNpmTasks('grunt-bower-install');
+  grunt.loadNpmTasks('grunt-contrib-sass');
 
   // Tasks
   grunt.registerTask('min', ['useminPrepare', 'concat', 'uglify', 'cssmin', 'rev', 'usemin']);
-  grunt.registerTask('build', ['clean:dist', 'copy', 'min', 'clean:js', 'clean:css']);
-  grunt.registerTask('server', ['browserSync', 'watch']);
+  grunt.registerTask('build', ['sass', 'bowerInstall', 'clean:dist', 'copy', 'min', 'clean:js', 'clean:css']);
+  grunt.registerTask('server', ['bowerInstall', 'browserSync', 'watch']);
   grunt.registerTask('default', ['server']);
 }
